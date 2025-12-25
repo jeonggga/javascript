@@ -319,3 +319,88 @@ function pay(drink) {
     // 최종적으로 결제가 완료된 음료명을 반환
     return drink;
 }
+
+
+
+// -------------------------------------------
+// 음료 제조 함수
+// -------------------------------------------
+function making_drink(drink) {
+    console.log(`주문하신 음료: ${drink}\n제조가 완료되었습니다.\n맛있게 드세요`);
+}
+
+
+
+// -------------------------------------------
+// 재주문 여부 확인 함수
+// -------------------------------------------
+function continue_order() {
+        let input_order = parseInt(prompt("음료 주문을 이어서 하시겠어요?(Y/N)"));
+
+        if (input_order == "Y" || input_order == "y") {
+            return true;
+        } else if (input_order == "N" || input_order == "n") {
+            console.log("주문이 종료되었습니다. 다음에 또 오세요!");
+            return false;
+        } else {
+            console.log("잘못된 입력입니다. 다시 입력해주세요.");
+            return continue_order();
+        }
+}
+
+
+
+// -------------------------------------------
+// 음료 재료 재고 확인 함수
+// 선택한 음료의 레시피를 확인하고 재고를 차감
+// -------------------------------------------
+function ingredient_check(drink) {
+
+    for (let drink_menu in recipe) {
+
+        if (drink == recipe[drink_menu]) {
+
+
+            for (ingr_name in value_tuple) {
+
+                if (ingredient[ingr_name] >= value_tuple[ingr_name]) {
+
+
+                    ingredient[ingr_name] -= value_tuple[ingr_name];
+                    
+                    console.log("- 사용한 용량: ", ingr_name, value_tuple[ingr_name]);
+                    console.log("- 남은 용량: ", ingr_name, ingredient[ingr_name]);
+                
+                } else {
+                    console.log("- 현재 원두 재고: ", ingredient["bean"]);
+                    console.log("수량이 부족합니다. 다른 메뉴를 선택해주세요.");
+                    return select_drink();
+                }
+            } return true;
+            
+        }
+    }    
+}
+
+
+
+// -------------------------------------------
+// 메인 함수 : 전체 음료 주문 프로세스 운영
+// -------------------------------------------
+function coffee_machine() {
+    while (true) {
+        let drink = select_drink();
+        pay(drink);
+
+
+        if (ingredient_check(drink)) {
+            making_drink(drink);
+        }
+
+        if (continue_order() === false) {
+            break;
+        }
+    }
+}
+
+coffee_machine();
