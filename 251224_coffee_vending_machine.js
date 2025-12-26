@@ -299,12 +299,9 @@ function pay(drink) {
             // 1. 투입 금액이 가격보다 크거나 같을 때 (성공)
             alert(`\n>>> 결제가 완료되었습니다.\n>>> 음료 제조를 시작합니다.\n`);
 
-            // 영수증 출력 프로세스
-            console.log("================== 영수증 ==================");
-            console.log(`주문 메뉴: ${drink} --------------- ${price[drink]}원`);
-            console.log("--------------------------------------------");
+            // 출력 프로세스
+            console.log(`주문 메뉴: ${drink} ----- ${price[drink]}원`);
             console.log("주문해주셔서 감사합니다. 맛있는 하루되세요.\nWIFI 비밀번호는 12345입니다.");
-            console.log("============================================\n");
 
             // 거스름돈 발생 시 처리
             if (inputPay > price[drink]) {
@@ -325,7 +322,14 @@ function pay(drink) {
 // -------------------------------------------
 // 음료 제조 함수
 // -------------------------------------------
+
+// making_drink라는 이름의 함수를 만든다
+// drink는 주문한 음료 이름이 들어오는 변수이다
 function making_drink(drink) {
+
+    // console.log는 콘솔(개발자 도구)에 내용을 출력하는 함수이다
+    // ${drink}는 전달받은 음료 이름을 문자열 안에 넣어준다
+    // \n은 줄바꿈을 의미한다
     console.log(`주문하신 음료: ${drink}\n제조가 완료되었습니다.\n맛있게 드세요`);
 }
 
@@ -334,16 +338,33 @@ function making_drink(drink) {
 // -------------------------------------------
 // 재주문 여부 확인 함수
 // -------------------------------------------
-function continue_order() {
-        let input_order = parseInt(prompt("음료 주문을 이어서 하시겠어요?(Y/N)"));
 
-        if (input_order == "Y" || input_order == "y") {
+// continue_order라는 이름의 함수를 선언한다
+// 이 함수는 사용자가 주문을 계속할지 여부를 판단해서
+// true 또는 false를 반환한다
+function continue_order() {
+
+        // prompt는 사용자에게 입력창을 띄우는 함수이다
+        // 사용자가 입력한 값은 문자열로 input_order 변수에 저장된다
+        let input_order = prompt("음료 주문을 이어서 하시겠어요?(Y/N)");
+
+        // 사용자가 Y 또는 y를 입력했을 경우
+        if (input_order === "Y" || input_order === "y") {
+            // 주문을 계속한다는 의미로 true를 반환
             return true;
-        } else if (input_order == "N" || input_order == "n") {
+
+        // 사용자가 N 또는 n을 입력했을 경우
+        } else if (input_order === "N" || input_order === "n") {
+            // 주문 종료 메시지를 콘솔에 출력
             console.log("주문이 종료되었습니다. 다음에 또 오세요!");
+            // 주문을 종료한다는 의미로 false를 반환
             return false;
+
+        // Y, y, N, n 이외의 값을 입력했을 경우
         } else {
+            // 잘못된 입력이라는 메시지를 출력
             console.log("잘못된 입력입니다. 다시 입력해주세요.");
+            // 함수를 다시 호출해서 다시 입력받는다 (재귀 호출)
             return continue_order();
         }
 }
@@ -354,53 +375,81 @@ function continue_order() {
 // 음료 재료 재고 확인 함수
 // 선택한 음료의 레시피를 확인하고 재고를 차감
 // -------------------------------------------
+
+// ingredient_check라는 함수는
+// 사용자가 선택한 drink를 받아서
+// 해당 음료를 만들 수 있는지 재고를 확인한다
 function ingredient_check(drink) {
 
+    // recipe 객체(또는 배열)에 있는 메뉴들을 하나씩 확인한다
     for (let drink_menu in recipe) {
 
+        // 선택한 음료와 레시피의 값이 같은지 비교한다
         if (drink == recipe[drink_menu]) {
 
+            // value_tuple에 들어있는 재료 이름들을 하나씩 확인한다
+            for (let ingr_name in value_tuple) {
 
-            for (ingr_name in value_tuple) {
-
+                // 현재 재고가 필요한 재료 양보다 많거나 같은지 확인한다
                 if (ingredient[ingr_name] >= value_tuple[ingr_name]) {
 
-
+                    // 재고에서 사용한 만큼 차감한다
                     ingredient[ingr_name] -= value_tuple[ingr_name];
-                    
+
+                    // 사용한 재료 용량을 콘솔에 출력한다
                     console.log("- 사용한 용량: ", ingr_name, value_tuple[ingr_name]);
+
+                    // 남아있는 재고 용량을 콘솔에 출력한다
                     console.log("- 남은 용량: ", ingr_name, ingredient[ingr_name]);
-                
+
                 } else {
+                    // 재고가 부족한 경우 현재 원두 재고를 출력한다
                     console.log("- 현재 원두 재고: ", ingredient["bean"]);
+
+                    // 재고 부족 안내 메시지 출력
                     console.log("수량이 부족합니다. 다른 메뉴를 선택해주세요.");
+
+                    // 다시 음료 선택 함수로 돌아간다
                     return select_drink();
                 }
-            } return true;
-            
+            }
+
+            // 모든 재료가 충분해서 정상적으로 차감되면 true를 반환한다
+            return true;
         }
-    }    
+    }
 }
 
 
 
-// -------------------------------------------
-// 메인 함수 : 전체 음료 주문 프로세스 운영
-// -------------------------------------------
+// coffee_machine 함수는
+// 음료 선택 → 결제 → 재고 확인 → 제조 → 재주문 여부 확인
+// 이 모든 과정을 반복해서 처리하는 메인 함수이다
 function coffee_machine() {
+
+    // while(true)는 무한 반복을 의미한다
+    // break를 만나기 전까지 계속 실행된다
     while (true) {
+
+        // 음료를 선택하고 선택한 음료를 drink 변수에 저장한다
         let drink = select_drink();
+
+        // 선택한 음료에 대해 결제를 진행한다
         pay(drink);
 
-
+        // 재고가 충분한지 확인한다
+        // ingredient_check가 true를 반환하면 음료를 제조한다
         if (ingredient_check(drink)) {
             making_drink(drink);
         }
 
+        // 주문을 계속할지 사용자에게 물어본다
+        // false가 반환되면 반복문을 종료한다
         if (continue_order() === false) {
             break;
         }
     }
 }
 
+// 프로그램을 시작하기 위해 메인 함수를 호출한다
 coffee_machine();
